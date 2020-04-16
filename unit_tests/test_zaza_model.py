@@ -1630,7 +1630,7 @@ class AsyncModelTests(aiounittest.AsyncTestCase):
             model.generic_utils,
             'check_call'
         ) as check_call:
-            await model.run_on_machine('1', 'test')
+            await model.async_run_on_machine('1', 'test')
         check_call.assert_called_once_with(
             ['juju', 'run', '--machine=1', 'test'])
 
@@ -1640,7 +1640,7 @@ class AsyncModelTests(aiounittest.AsyncTestCase):
             model.generic_utils,
             'check_call'
         ) as check_call:
-            await model.run_on_machine('1', 'test', timeout='20m')
+            await model.async_run_on_machine('1', 'test', timeout='20m')
         check_call.assert_called_once_with(
             ['juju', 'run', '--machine=1', '--timeout=20m', 'test'])
 
@@ -1650,6 +1650,6 @@ class AsyncModelTests(aiounittest.AsyncTestCase):
             model.generic_utils,
             'check_call'
         ) as check_call:
-            await model.run_on_machine('1', 'test', model_name='test')
+            await model.async_run_on_machine('1', 'test', model_name='test')
         check_call.assert_called_once_with(
             ['juju', 'run', '--machine=1', '--model=test', 'test'])
