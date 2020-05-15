@@ -128,6 +128,12 @@ class TestModel(ut_utils.BaseTestCase):
         async def _destroy_relation(rel1, rel2):
             return
 
+        async def _add_unit(count=1, to=None):
+            return
+
+        async def _destroy_unit(*unitnames):
+            return
+
         def _is_leader(leader):
             async def _inner_is_leader():
                 return leader
@@ -191,6 +197,8 @@ class TestModel(ut_utils.BaseTestCase):
         self.app_data.units = self.units
         self.app_data.relations = self.relations
         self.app_data.status = 'active'
+        _units.add_unit.side_effect = _add_unit
+        _units.destroy_unit.side_effect = _destroy_unit
         self.mymodel = mock.MagicMock()
         self.mymodel.applications = {
             'app': self.app_data
@@ -510,6 +518,22 @@ class TestModel(ut_utils.BaseTestCase):
         self.mymodel.applications[
             'app'].destroy_relation.assert_called_once_with('shared-db',
                                                             'mysql-shared-db')
+
+    def test_add_unit(self):
+        self.patch_object(model, 'get_juju_model', return_value='mname')
+        self.patch_object(model, 'Model')
+        self.Model.return_value = self.Model_mock
+        model.add_unit('app', count=2, to='lxd/0')
+        self.mymodel.applications['app'].add_unit.assert_called_once_with(
+            count=2, to='lxd/0')
+
+    def test_destroy_unit(self):
+        self.patch_object(model, 'get_juju_model', return_value='mname')
+        self.patch_object(model, 'Model')
+        self.Model.return_value = self.Model_mock
+        model.destroy_unit('app', 'app/2')
+        self.mymodel.applications['app'].destroy_unit.assert_called_once_with(
+            'app/2')
 
     def test_get_relation_id_interface(self):
         self.patch_object(model, 'get_juju_model', return_value='mname')
